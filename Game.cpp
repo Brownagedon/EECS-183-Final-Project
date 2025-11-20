@@ -63,10 +63,40 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     }
 }
 
-// Stub for isValidPickupList for Core
-// You *must* revise this function according to the RME and spec
+    /**
+     * Requires: pickupFloorNum is the floor the pickup move was called on
+     * Modifies: nothing
+     * Effects:  determines if pickupList is a valid
+     *           list of people to pick up
+     */
 bool Game::isValidPickupList(const string& pickupList, 
                              const int pickupFloorNum) const {
+    int listLength = pickupList.length();
+    int direction[listLength];
+    if (listLength > ELEVATOR_CAPACITY) {
+        return false;
+    }    
+    for (int i = 0; i < listLength; i++) {
+        //if any duplicates, return false
+        for (int j = 0; j < listLength; j++) {
+            if (pickupList.at(i) == pickupList.at(j) && i != j) {
+                return false;
+            }
+        }
+        //if out of bounds, return false
+        if (pickupList.at(i) > '9' || pickupList.at(i) < '0') {
+            return false;
+        }
+        //if index goes outside num of people on a floor, return false
+        if (pickupList.at(i) - '0' >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()) {
+            return false;
+        }
+        //Each person represented by an index in pickupList must be going in the same direction relative to pickupFloorNum
+        if (direction[i] > 0) {
+
+        }
+
+    }
     return true;
 }
 

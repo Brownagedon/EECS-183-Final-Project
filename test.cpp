@@ -32,15 +32,20 @@ void testMove();
 void testMoveIsValidMove();
 void testMoveSetPeopleToPickup();
 void testFloor();
+void testGame();
 
 void start_tests() {
     testMove();
     //testFloor();
+    testGame();
     
     return;
 }
 
 // write test functions here
+void testGame() {
+    
+}
 
 void testMove() {
     Elevator testElevators[3];
