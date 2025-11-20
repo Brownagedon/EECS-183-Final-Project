@@ -68,20 +68,39 @@ void Floor::addPerson(Person newPerson, int request) {
      */
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR],
                          int numPeopleToRemove) {
-    Person newPeople[numPeople - numPeopleToRemove];
-	int removeI = 0;
+	int removed = 0;
 	for (int i = 0; i < numPeople; i++) {
-		if (i != indicesToRemove[removeI]) {
-			newPeople[i - removeI] = people[i];
-		} else {
-			removeI++;
+		for (int j = 0; j < numPeopleToRemove; j++) {
+			if (i == indicesToRemove[j]) {
+				for (int k = indicesToRemove[j + 1]; k < numPeople; k++) {
+					people[k - 1] = people[k];
+				}
+			}
 		}
 	}
 	resetRequests();
 }
 
+    /*
+     * Requires: nothing
+     * Modifies: hasUpRequest, hasDownRequest
+     * Effects: Search through people to find if there are any
+     *          pending up requests or down requests. Set the
+     *          values of hasUpRequest and hasDownRequest appropriately.
+     *          This function is used to recalculate requests whenever
+     *          the people on this floor are added or removed.
+     */
 void Floor::resetRequests() {
-    //TODO: Implement resetRequests
+	hasUpRequest = false;
+	hasDownRequest = false;
+    for (int i = 0; i < numPeople; i++) {
+		if (people[i].getTargetFloor() - people[i].getCurrentFloor() > 0){
+			hasUpRequest = true;
+		}
+		if (people[i].getTargetFloor() - people[i].getCurrentFloor() < 0) {
+			hasDownRequest = true;
+		}
+	}
 }
 
 //////////////////////////////////////////////////////
