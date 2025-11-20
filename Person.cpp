@@ -17,28 +17,33 @@
 
 using namespace std;
 
-    /*
-     * Requires: inputString is correctly formatted
-     * Modifies: turn, currentFloor, targetFloor, angerLevel
-     * Effects:  Parses input_string to set member variables
-     *           An example of input_string is "7f4t8a3".
-    */
-Person::Person(string inputString) : Person() {
-    turn = inputString.at(0) - '0';
-    currentFloor = inputString.at(2) - '0';
-    targetFloor = inputString.at(4) - '0';
-    angerLevel = inputString.at(6) - '0';
+Person::Person(string inputString) {
+
+    int fPos = inputString.find('f');
+    int tPos = inputString.find('t');
+    int aPos = inputString.find('a');
+
+    // each part appears exactly once in valid input
+    turn = stoi(inputString.substr(0, fPos));
+    currentFloor = stoi(inputString.substr(fPos + 1, tPos - (fPos + 1)));
+    targetFloor = stoi(inputString.substr(tPos + 1, aPos - (tPos + 1)));
+    angerLevel = stoi(inputString.substr(aPos + 1));
 }
 
 bool Person::tick(int currentTime) {
-    //TODO: Implement tick
-
-    //Returning false to prevent compilation error
-    return false;
+    // every few ticks, anger goes up by 1
+    if (currentTime % TICKS_PER_ANGER_INCREASE == 0) {
+        angerLevel++;
+    }
+    // return whether this person has exploded
+    return (angerLevel >= MAX_ANGER);
 }
 
-void Person::print(ostream &outs) {    
-    //TODO: Implement print
+void Person::print(ostream &outs) {
+    // print everything except the turn (autograder expects this format)
+    outs << "f" << currentFloor
+         << "t" << targetFloor
+         << "a" << angerLevel;
 }
 
 //////////////////////////////////////////////////////
