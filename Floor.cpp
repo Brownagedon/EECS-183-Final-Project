@@ -32,7 +32,7 @@ int Floor::tick(int currentTime) {
 		}
 	}
 	removePeople(explodeArray, numExplode);
-    return 0;
+    return numExplode;
 }
 
     /*
@@ -68,16 +68,28 @@ void Floor::addPerson(Person newPerson, int request) {
      */
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR],
                          int numPeopleToRemove) {
-	int removed = 0;
+	Person newPeopleList[numPeople - numPeopleToRemove];
+	int goodPeople = 0;
 	for (int i = 0; i < numPeople; i++) {
+		bool needRemoved = false;
 		for (int j = 0; j < numPeopleToRemove; j++) {
 			if (i == indicesToRemove[j]) {
-				for (int k = indicesToRemove[j + 1]; k < numPeople; k++) {
-					people[k - 1] = people[k];
-				}
+				needRemoved = true;	
 			}
 		}
+		if (!needRemoved) {
+			newPeopleList[goodPeople] = people[i];
+			goodPeople++;
+		}
 	}
+	for (int i = 0; i < numPeople; i++) {
+		Person newPerson;
+		people[i] = newPerson;
+	}
+	for (int i = 0; i < numPeople - numPeopleToRemove; i++) {
+		people[i] = newPeopleList[i];
+	}
+	numPeople -= numPeopleToRemove;
 	resetRequests();
 }
 

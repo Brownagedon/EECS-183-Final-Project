@@ -54,8 +54,25 @@ void testMoveConstructor() {
 void testFloor() {
     Floor test;
     Person testP;
+    Person test2;
+    Person test3;
+    Person test4;
+    Person test5;
+    Person test6;
+    Person test7;
+    int testInts[4] = {2, 4,1,3};
     test.addPerson(testP, 1);
-    cout << "Testing add person.\nExpected: 1. Actual: " << test.getHasUpRequest() << endl;
+    cout << "Testing add person.\nExpected: 1. Actual: " << test.getHasUpRequest() << endl << endl;
 
-    test.tick(1);
+    cout<< "Testing remove.";
+    test.addPerson(test2, 1);
+    test.addPerson(test3, 1);
+    test.addPerson(test4, 1);
+    test.addPerson(test5, 1);
+    
+    test.addPerson(test6, 1);
+    test.addPerson(test7, 1);
+    test.removePeople(testInts, 4);
+    cout << test.getNumPeople() << endl;
+    test.printFloorPickupMenu(cout);
 }
