@@ -4,7 +4,7 @@
  * Elevator.cpp
  * Project UID 848fee0125dbb5eb53ed294f20dbef81
  *
- * <#Names#>
+ * <#Names#> 
  * <#Uniqnames#>
  *
  * Final Project - Elevators
@@ -12,15 +12,35 @@
 
 #include "Elevator.h"
 #include <iostream>
-
 using namespace std;
 
 void Elevator::tick(int currentTime) {
-    //TODO: Implement tick
+    // if not servicing anything, do nothing
+    if (!servicing) return;
+
+    // move every fixed number of ticks
+    if (currentTime % TICKS_PER_ELEVATOR_MOVE == 0) {
+        if (currentFloor < targetFloor) {
+            currentFloor++;            // going up
+        }
+        else if (currentFloor > targetFloor) {
+            currentFloor--;            // going down
+        }
+
+        // reached destination
+        if (currentFloor == targetFloor) {
+            servicing = false;
+        }
+    }
 }
 
 void Elevator::serviceRequest(int floorNum) {
-    //TODO: Implement serviceRequest
+    // if already servicing, nothing to do
+    if (servicing) return;
+
+    // set up the new request
+    targetFloor = floorNum;
+    servicing = true;
 }
 
 //////////////////////////////////////////////////////
