@@ -17,8 +17,17 @@
 
 using namespace std;
 
+    /*
+     * Requires: inputString is correctly formatted
+     * Modifies: turn, currentFloor, targetFloor, angerLevel
+     * Effects:  Parses input_string to set member variables
+     *           An example of input_string is "7f4t8a3".
+    */
 Person::Person(string inputString) : Person() {
-    //TODO: Implement non-default constructor
+    turn = inputString.at(0) - '0';
+    currentFloor = inputString.at(2) - '0';
+    targetFloor = inputString.at(4) - '0';
+    angerLevel = inputString.at(6) - '0';
 }
 
 bool Person::tick(int currentTime) {

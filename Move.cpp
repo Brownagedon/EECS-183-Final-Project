@@ -15,11 +15,16 @@
 #include <stdio.h>      
 #include <stdlib.h>
 #include "Move.h"
+#include "SatisfactionIndex.h"
+#include "Utility.h"
 
 using namespace std;
 
+
 Move::Move(string commandString) : Move() {
-    if (commandString.at(0) == 'e' && commandString.at(2) == 'f') {
+    if (commandString == "") { //check for empty string comes first, to not reference out of bounds 
+        isPass = true;
+    } else if (commandString.at(0) == 'e' && commandString.at(2) == 'f') {
         elevatorId = commandString.at(1) - '0';
         targetFloor = commandString.at(3) - '0';
     } else if (commandString.at(0) == 'e' && commandString.at(2) == 'p') {
@@ -29,22 +34,39 @@ Move::Move(string commandString) : Move() {
         isSave = true;
     } else if (commandString == "Q") {
         isQuit = true;
-    } else if (commandString == "") {
-        isPass = true;
     }
-    
 }
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
-    //TODO: Implement isValidMove
-    
-    //Returning false to prevent compilation error
+    if (isPass || isQuit || isSave) {
+        return true;
+    } else if ((elevatorId >= 0 && elevatorId < NUM_ELEVATORS) 
+                && !elevators[elevatorId].isServicing()) {
+        if (isPickup) {
+            return true;
+        } else if (targetFloor != elevators[elevatorId].getCurrentFloor()) {
+            return true;
+        }
+    } else {
+        return false;
+    }
     return false;
 }
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, 
                              const Floor& pickupFloor) {
-    //TODO: Implement setPeopleToPickup
+    targetFloor = currentFloor;
+    numPeopleToPickup = 0;
+    totalSatisfaction = 0;
+    for (int i = 0; i < pickupList.length(); i++) {
+        peopleToPickup[i] = pickupList.at(i) - '0';
+        totalSatisfaction += MAX_ANGER - pickupFloor.getPersonByIndex(peopleToPickup[i]).getAngerLevel();
+        if (abs(pickupFloor.getPersonByIndex(peopleToPickup[i]).getTargetFloor() - currentFloor) 
+            > abs(targetFloor - currentFloor)) {
+            targetFloor = pickupFloor.getPersonByIndex(peopleToPickup[i]).getTargetFloor();
+        }
+        numPeopleToPickup++;
+    }
 }
 
 //////////////////////////////////////////////////////
