@@ -28,12 +28,34 @@
 
 using namespace std;
 
-// declare your test functions here
+void testMoveConstructor();
+void testMoveIsValidMove();
+void testMoveSetPeopleToPickup();
+void testFloor();
 
 void start_tests() {
-    // call your test functions here
+    testMoveConstructor();
+    testFloor();
     
     return;
 }
 
 // write test functions here
+
+void testMoveConstructor() {
+    Move testMove("e1f4");
+    Move test2("e1p");
+    cout << "Testing non-default Move constructor\nExpected: 14\nActual: " 
+    << testMove.getElevatorId() << testMove.getTargetFloor() << endl << endl;
+    
+    cout << "Expecting: 1 1. Actual: " << test2.getElevatorId() << " " << test2.isPickupMove() << endl << endl;
+}
+
+void testFloor() {
+    Floor test;
+    Person testP;
+    test.addPerson(testP, 1);
+    cout << "Testing add person.\nExpected: 1. Actual: " << test.getHasUpRequest() << endl;
+
+    test.tick(1);
+}

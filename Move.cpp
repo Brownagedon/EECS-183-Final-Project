@@ -19,7 +19,20 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
-    //TODO: Implement non-default constructor
+    if (commandString.at(0) == 'e' && commandString.at(2) == 'f') {
+        elevatorId = commandString.at(1) - '0';
+        targetFloor = commandString.at(3) - '0';
+    } else if (commandString.at(0) == 'e' && commandString.at(2) == 'p') {
+        elevatorId = commandString.at(1) - '0';
+        isPickup = true;
+    } else if (commandString == "S") {
+        isSave = true;
+    } else if (commandString == "Q") {
+        isQuit = true;
+    } else if (commandString == "") {
+        isPass = true;
+    }
+    
 }
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
