@@ -53,15 +53,14 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     while (1) {
         // get next move from file
         getline(gameFile, inputString);
-        cout << inputString << endl;
 
         // determind if valid spawn by checking fta locations, and making sure values between are numbers
-        isValidSpawn = ((inputString.length() == 7 || inputString.length() == 8)
-                        && inputString.find('f') == inputString.length() - 5
-                        && inputString.find('t') == inputString.length() - 3
-                        && inputString.find('a') == inputString.length() - 1
+        isValidSpawn = ((inputString.length() == 8 || inputString.length() == 9)
+                        && inputString.find('f') == inputString.length() - 7
+                        && inputString.find('t') == inputString.length() - 5
+                        && inputString.find('a') == inputString.length() - 3
                     );
-        for (int i = inputString.find('f') == inputString.length() - 4; i < inputString.length(); i+=2) {
+        for (int i = inputString.find('f') == inputString.length() - 6; i < inputString.length(); i+=2) {
             if (inputString.at(i) < '0' || inputString.at(i) > '9') {
                 isValidSpawn = false;
             }
