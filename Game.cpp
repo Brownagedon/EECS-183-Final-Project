@@ -49,10 +49,12 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     printGameStartPrompt();
     initGame(gameFile);
 
+    //get rid of endl in buffer
     getline(gameFile, junk);
+
     while (1) {
         // get next move from file
-        getline(gameFile, inputString);
+        gameFile >> inputString;
 
         // determind if valid spawn by checking fta locations, and making sure values between are numbers
         if (inputString.length() == 8) {
@@ -66,7 +68,7 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
                         && inputString.find('t') == 4
                         && inputString.find('a') == 6;
         }
-        //made sure the chars after fta are digits
+        // made sure the chars after fta are digits
         for (int i = inputString.find('f') + 1; i < inputString.length(); i+=2) {
             if (inputString.at(i) < '0' || inputString.at(i) > '9') {
                 isValidSpawn = false;
