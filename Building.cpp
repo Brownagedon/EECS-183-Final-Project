@@ -15,18 +15,57 @@
 using namespace std;
 
 void Building::spawnPerson(Person newPerson){
-    //TODO: Implement spawnPerson
+    // gets the current and target floors for newPerson
+    int current = newPerson.getCurrentFloor();
+    int target = newPerson.getTargetFloor();
+    // determine direction of requested floor
+    int request = target - current;
+
+    // adds new person to the correct floor
+    floors[current].addPerson(newPerson, request);
+    return;
 }
 
 void Building::update(Move move){
-    //TODO: Implement update
+    // if its a pass move, nothing changes
+    if (move.isPassMove()) {
+        return;
+    }
+
+    // gets elevtor id and target floor
+    int eId = move.getElevatorId();
+    int targetF = move.getTargetFloor();
+
+    // if it's a pickup move, remove the selected people
+    if (move.isPickupMove()) {
+        int peopleToRemove[MAX_PEOPLE_PER_FLOOR];
+        move.copyListOfPeopleToPickup(peopleToRemove);
+
+        int numPeople = move.getNumPeopleToPickup();
+        int currentFloor = elevators[eId].getCurrentFloor();
+        floors[elevators[eId].getCurrentFloor()].removePeople(peopleToRemove, numPeople);
+    }
+    // for both pickup and service moves, send the elevator
+    elevators[eId].serviceRequest(targetF);
+    return;
 }
 
 int Building::tick(Move move){
-    //TODO: Implement tick
+    time++;
+    update(move);
 
-    //returning 0 to prevent compilation error
-    return 0;
+    // ticks all of the elevators with the new time
+    for (int i = 0; i < NUM_ELEVATORS; i++) {
+        elevators[i].tick(time);
+    }
+
+    int totalExploded = 0;
+    // ticks all of the building floors, keeping track of new 
+    // exploded people
+    for (int i = 0; i < NUM_FLOORS; i++) {
+        totalExploded += floors[i].tick(time);
+    }
+    return totalExploded;
 }
 
 //////////////////////////////////////////////////////

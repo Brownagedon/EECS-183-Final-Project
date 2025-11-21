@@ -33,9 +33,11 @@ void testMoveIsValidMove();
 void testMoveSetPeopleToPickup();
 void testFloor();
 void testGame();
+void testBuilding();
 
 void start_tests() {
     testMove();
+    testBuilding();
     //testFloor();
     testGame();
     
@@ -44,7 +46,82 @@ void start_tests() {
 
 // write test functions here
 void testGame() {
+     return;
+}
     
+void testBuilding() {
+    cout << "Testing Building class\n";
+
+    // testing spawnPerson with an up request from floor 0
+    Building b1;
+    // turn 0, current 0, target 3
+    Person pUp("0f0t3a0");
+    b1.spawnPerson(pUp);
+
+    Floor f0 = b1.getFloorByFloorNum(0);
+    cout << "Expected numPeople: 1, Actual "
+         << f0.getNumPeople() << "\n";
+    cout << "Expected hasUpRequest: 1, Actual "
+         << f0.getHasUpRequest() << "\n\n";
+
+    // testing tick with Pass move (tests update pass case too)
+    Move passMove("");
+    int explodedPass = b1.tick(passMove);
+    Elevator e0Pass = b1.getElevatorById(0);
+
+    cout << "tick(pass): Expected time: 1, Actual "
+         << b1.getTime() << "\n";
+    cout << "Expected exploded: 0, Actual "
+         << explodedPass << "\n";
+    cout << "Expected servicing: 0, Actual "
+         << e0Pass.isServicing() << "\n\n";
+
+    // testing tick with Service move (tests update service case too)
+    Building b2;
+    // send elevator 0 to floor 4
+    Move serviceMove("e0f4");
+    b2.tick(serviceMove);
+
+    Elevator e0Serv = b2.getElevatorById(0);
+    cout << "tick(service e0f4): Expected time: 1, Actual "
+         << b2.getTime() << "\n";
+    cout << "Expected servicing: 1, Actual "
+         << e0Serv.isServicing() << "\n";
+    cout << "Expected targetFloor: 4, Actual "
+         << e0Serv.getTargetFloor() << "\n\n";
+
+    // testing tick with Pickup move (tests update pickup case too)
+    Building b3;
+    // two people on floor 0: one to 3, one to 5
+    Person pA("0f0t3a0");
+    Person pB("0f0t5a0");
+    b3.spawnPerson(pA);
+    b3.spawnPerson(pB);
+
+    Floor beforePickup = b3.getFloorByFloorNum(0);
+    cout << "Before pickup, Expected numPeople: 2, Actual "
+         << beforePickup.getNumPeople() << "\n";
+
+    Move pickupMove("e0p");
+    Floor pickupFloor = b3.getFloorByFloorNum(0);
+    // pick up just index 0
+    pickupMove.setPeopleToPickup("0", 0, pickupFloor);
+
+    int explodedPickup = b3.tick(pickupMove);
+
+    Floor afterPickup = b3.getFloorByFloorNum(0);
+    Elevator e0Pick = b3.getElevatorById(0);
+
+    cout << "tick(pickup): Expected numPeople: 1, Actual "
+         << afterPickup.getNumPeople() << "\n";
+    cout << "Expected servicing: 1, Actual "
+         << e0Pick.isServicing() << "\n";
+    cout << "Expected exploded: 0, Actual "
+         << explodedPickup << "\n";
+    cout << "Expected elevator targetFloor == Move targetFloor: "
+         << "Move " << pickupMove.getTargetFloor()
+         << ", Elevator " << e0Pick.getTargetFloor() << "\n\n";
+    return;
 }
 
 void testMove() {
