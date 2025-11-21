@@ -10,6 +10,7 @@
  * Final Project - Elevators
  */
  
+#include <cmath>
 #include <fstream>
 #include <random>
 #include <sstream>
@@ -38,8 +39,11 @@ using namespace std;
      */
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     bool isValidSpawn = true;
+    int tick = 0;
+    int moveTick = 0;
+    char moveTickChar[2];
     string inputString;
-    string junk;
+    string buffer;
 
     //make sure file is loaded
     if (gameFile.is_open() == false) exit(1);
@@ -49,36 +53,69 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     printGameStartPrompt();
     initGame(gameFile);
 
-    //get rid of endl in buffer
-    getline(gameFile, junk);
+    //get rid of endl in buffer and set buffer to 0
+    getline(gameFile, buffer);
+    buffer = "0";
 
+// initial get spawns and moveTick
+    // get next move from file
+    gameFile >> inputString;
+
+    // isolate tick chars
+    buffer = inputString;
+    buffer.erase(buffer.find('f')); 
+
+    for (int i = buffer.size() - 1; i >= 0; i--) {
+        moveTickChar[i] = buffer.at(i);
+        moveTick += (moveTickChar[i] - '0') * pow(10.0, static_cast<double>((buffer.size() - i - 1)));
+    }
+    
     while (1) {
-        // get next move from file
-        gameFile >> inputString;
+        while (tick == moveTick) {
+            // reset back to false
+            isValidSpawn = false;
 
-        // determind if valid spawn by checking fta locations, and making sure values between are numbers
-        if (inputString.length() == 8) {
-            isValidSpawn =  
-                        inputString.find('f') == 1
-                        && inputString.find('t') == 3
-                        && inputString.find('a') == 5;
-        } else if (inputString.length() == 9){ //if length is 9, f, t, and a will be displaced
-            isValidSpawn = 
-                        inputString.find('f') == 2
-                        && inputString.find('t') == 4
-                        && inputString.find('a') == 6;
-        }
-        // made sure the chars after fta are digits
-        for (int i = inputString.find('f') + 1; i < inputString.length(); i+=2) {
-            if (inputString.at(i) < '0' || inputString.at(i) > '9') {
-                isValidSpawn = false;
-                cout << "not good!" << endl;
+            // determind if valid spawn by checking fta locations, and making sure values between are numbers
+            if (inputString.length() == 7) {
+                isValidSpawn =  
+                            (inputString.find('f') == 1
+                            && inputString.find('t') == 3
+                            && inputString.find('a') == 5);
+            } else if (inputString.length() == 8){ //if length is 9, f, t, and a will be displaced
+                isValidSpawn = 
+                            (inputString.find('f') == 2
+                            && inputString.find('t') == 4
+                            && inputString.find('a') == 6);
             }
-        }
-        // if valid spawn then spawn the new person in the building
-        if (isValidSpawn) {
-            Person newPerson(inputString);
-            building.spawnPerson(newPerson);
+
+            // made sure the chars after fta are digits
+            for (int i = inputString.find('f') + 1; i < inputString.length(); i+=2) {
+                if (inputString.at(i) < '0' || inputString.at(i) > '9') {
+                    isValidSpawn = false;
+                }
+            }
+
+            // if valid spawn then spawn the new person in the building
+            if (isValidSpawn) {
+                Person newPerson(inputString);
+                building.spawnPerson(newPerson);
+            }
+
+            // get next line
+            gameFile >> inputString;
+
+            // isolate tick chars
+            buffer = inputString;
+            buffer.erase(buffer.find('f')); 
+
+
+            // determine moveTick of next line
+            moveTick = 0;
+            for (int i = buffer.size() - 1; i >= 0; i--) {
+            moveTickChar[i] = buffer.at(i);
+            moveTick += (moveTickChar[i] - '0') * pow(10.0, static_cast<double>((buffer.size() - i - 1)));
+            }
+  
         }
 
         // print the state of the Building and check for end of game
@@ -89,6 +126,9 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
         // get and apply the next move
         Move nextMove = getMove();
         update(nextMove);
+
+        // set tick to building time
+        tick = building.getTime();
     }
 }
 
