@@ -72,12 +72,17 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
 bool Game::isValidPickupList(const string& pickupList, 
                              const int pickupFloorNum) const {
     int listLength = pickupList.length();
-    int direction[listLength];
-                            
+    int numPeopleOnFloor = building.getFloorByFloorNum(pickupFloorNum).getNumPeople();
+    bool goingUp[listLength];
+    
+    //for loop finds the direction of every index in pickupList where 1 is up and 0 is down
     for (int i = 0; i < listLength; i++) {
-        
+        goingUp[i] = 
+            (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[i] - '0').getCurrentFloor() 
+            - building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[i] - '0').getTargetFloor() 
+            > 0);
     }
-
+    
     if (listLength > ELEVATOR_CAPACITY) {
         return false;
     }    
@@ -93,12 +98,12 @@ bool Game::isValidPickupList(const string& pickupList,
             return false;
         }
         //if index goes outside num of people on a floor, return false
-        if (pickupList.at(i) - '0' >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()) {
+        if (pickupList.at(i) - '0' >= numPeopleOnFloor) {
             return false;
         }
-        //Each person represented by an index in pickupList must be going in the same direction relative to pickupFloorNum
+        //loop checking to make sure all riders going in same direction
         for (int j = 0; j < listLength; j++) {
-            if ((direction[i] > 0) != (direction[j] > 0)) {
+            if ((goingUp[i] > 0) != (goingUp[j] > 0)) {
                 return false;
             }
         }

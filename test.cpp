@@ -165,7 +165,6 @@ void testFloor() {
     test.addPerson(test3, 1);
     test.addPerson(test4, 1);
     test.addPerson(test5, 1);
-    
     test.addPerson(test6, 1);
     test.addPerson(test7, 1);
     test.removePeople(testInts, 4);

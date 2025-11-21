@@ -15,13 +15,7 @@
 #include "Utility.h"
 
 using namespace std;
-    /*
-     * Requires: nothing
-     * Modifies: people
-     * Effects:  Ticks each person on this floor
-     *           Also removes any Person who explodes
-     *           Returns the number of exploded people
-     */
+
 int Floor::tick(int currentTime) {
 	int numExplode = 0;
 	int explodeArray[MAX_PEOPLE_PER_FLOOR];
@@ -35,12 +29,6 @@ int Floor::tick(int currentTime) {
     return numExplode;
 }
 
-    /*
-     * Requires: request != 0
-     * Modifies: hasUpRequest, hasDownRequest, numPeople, people
-     * Effects:  If there is still room, add newPerson to people.
-     *           Updates hasUpRequest or hasDownRequest based on value of request
-     */
 void Floor::addPerson(Person newPerson, int request) {
     if (numPeople < MAX_PEOPLE_PER_FLOOR) {
 		people[numPeople] = newPerson;
@@ -53,23 +41,14 @@ void Floor::addPerson(Person newPerson, int request) {
 		numPeople++;
 	}
 }
-    /*
-     * Requires: numPeopleToRemove >= 0, 
-     *           numPeopleToRemove <= MAX_PEOPLE_PER_FLOOR,
-     *           numPeopleToRemove >= 0, numPeopleToRemove <= numPeople,
-     *           for all values of i such that 0 <= i < numPeopleToRemove, 
-     *           indicesToRemove[i] < numPeople
-     * Modifies: people[], numPeople, hasUpRequest, hasDownRequest
-     * Effects:  Removes objects from people[] at indices specified 
-     *           in indicesToRemove[].
-     *           The size of indicesToRemove[] is given by numPeopleToRemove.
-     *           After removals, calls resetRequests() to update hasUpRequest 
-     *           and hasDownRequest.
-     */
+
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR],
                          int numPeopleToRemove) {
+
+	//list of people to copy to, and how many good people there are						
 	Person newPeopleList[numPeople - numPeopleToRemove];
 	int goodPeople = 0;
+
 	for (int i = 0; i < numPeople; i++) {
 		bool needRemoved = false;
 		for (int j = 0; j < numPeopleToRemove; j++) {
@@ -93,15 +72,6 @@ void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR],
 	resetRequests();
 }
 
-    /*
-     * Requires: nothing
-     * Modifies: hasUpRequest, hasDownRequest
-     * Effects: Search through people to find if there are any
-     *          pending up requests or down requests. Set the
-     *          values of hasUpRequest and hasDownRequest appropriately.
-     *          This function is used to recalculate requests whenever
-     *          the people on this floor are added or removed.
-     */
 void Floor::resetRequests() {
 	hasUpRequest = false;
 	hasDownRequest = false;
