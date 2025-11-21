@@ -37,27 +37,37 @@ using namespace std;
      *       before checkForGameEnd ends the game
      */
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    bool isValidSpawn;
+    bool isValidSpawn = false;
     string inputString;
+
+    //make sure file is loaded
+    if (!gameFile.is_open()) exit(1);
+    getline(gameFile, inputString);
+    cout << inputString;
+
 
     // initialize the game
     isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
 
-    //load file and make sure it loaded
-    gameFile.open("");
-    if (!gameFile.is_open()) exit(1);
 
     while (1) {
         // get next move from file
         getline(gameFile, inputString);
 
-        isValidSpawn = (inputString.length() == 7
-                        && inputString.at(1) == 'f'
-                        && inputString.at(3) == 't'
-                        && inputString.at(5) == 'a'
+        //determind if valid spawn by checking fta locations, and making sure values between are numbers
+        isValidSpawn = ((inputString.length() == 7 || inputString.length() == 8)
+                        && inputString.find('f') == inputString.length() - 5
+                        && inputString.find('t') == inputString.length() - 3
+                        && inputString.find('a') == inputString.length() - 1
                     );
+        for (int i = inputString.find('f') == inputString.length() - 4; i < inputString.length(); i+=2) {
+            if (inputString.at(i) < '0' || inputString.at(i) > '9') {
+                isValidSpawn = false;
+            }
+        }
+
         if (isValidSpawn) {
             Person newPerson(inputString);
             building.spawnPerson(newPerson);

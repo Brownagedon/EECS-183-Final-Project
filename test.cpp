@@ -34,12 +34,14 @@ void testMoveSetPeopleToPickup();
 void testFloor();
 void testGame();
 void testBuilding();
+void file_check();
 
 void start_tests() {
     testMove();
     testBuilding();
     //testFloor();
     testGame();
+    file_check();
     
     return;
 }
@@ -170,4 +172,21 @@ void testFloor() {
     test.removePeople(testInts, 4);
     cout << test.getNumPeople() << endl;
     test.printFloorPickupMenu(cout);
+}
+
+void file_check() {
+
+    // open one of the text files that are part of the starter code
+    ifstream ins;
+    ins.open("new.in");
+
+    // if the file was not in the correct directory, the stream state is fail
+    if (ins.fail()) {
+        cout << "Could not open new.in" << endl;
+    }
+    else {
+        cout << "Success! Text files are in the right directory." << endl;
+    }
+
+    return;
 }
