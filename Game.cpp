@@ -10,46 +10,57 @@
  * Final Project - Elevators
  */
  
+#include <fstream>
 #include <random>
 #include <sstream>
+#include <string>
 #include "Game.h"
 #include "AI.h"
+#include "Person.h"
 #include "Utility.h"
 using namespace std;
 
-// Stub for playGame for Core, which plays random games
-// You *must* revise this function according to the RME and spec
-// Code that will not appear in your solution is noted in the comments
+    /**
+     * Requires: nothing
+     * Modifies: cout, isAIMode, building, satisfactionIndex
+     * Effects:  if game input file is not open, exits with status 1
+     *           sets isAIMode
+     *           prints game start prompt   
+     *           initializes the game with the gameFile  
+     *           reads events from game input file
+     *           if event is happening on current turn, updates building 
+     *           with event else prints building and checks if game has 
+     *           ended, if it hasn't yet, gets user (player or AI) move, 
+     *           and updates building with move.
+     *
+     * Note: all of the event strings may have been read from the file
+     *       before checkForGameEnd ends the game
+     */
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    /* used to generate random numbers for spawning a randon Person
-     * these three statements will not be needed when you have
-     * finished this function */
-    std::mt19937 gen(1);
-    std::uniform_int_distribution<> floorDist(0, 9);
-    std::uniform_int_distribution<> angerDist(0, 3);
+    bool isValidSpawn;
+    string inputString;
 
     // initialize the game
     isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
 
-    /* play until checkForGameEnd() stops the program
-     * you *will* modify this loop
-     */
-    while (true) {
-        // random floor and targetFloor
-        // these two statements are not needed in the finished solution
-        int src = floorDist(gen);
-        int dst = floorDist(gen);
-        
-        /* check that the randomly generate floor and targetFloor differ
-         * none of this if statement will appear in your finished solution
-         * Persons will be read from the file instead */
-        if (src != dst) {
-            std::stringstream ss;
-            ss << "0f" << src << "t" << dst << "a" << angerDist(gen);
-            Person p(ss.str());
-            building.spawnPerson(p);
+    //load file and make sure it loaded
+    gameFile.open("");
+    if (!gameFile.is_open()) exit(1);
+
+    while (1) {
+        // get next move from file
+        getline(gameFile, inputString);
+
+        isValidSpawn = (inputString.length() == 7
+                        && inputString.at(1) == 'f'
+                        && inputString.at(3) == 't'
+                        && inputString.at(5) == 'a'
+                    );
+        if (isValidSpawn) {
+            Person newPerson(inputString);
+            building.spawnPerson(newPerson);
         }
 
         // print the state of the Building and check for end of game
@@ -63,12 +74,7 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     }
 }
 
-    /**
-     * Requires: pickupFloorNum is the floor the pickup move was called on
-     * Modifies: nothing
-     * Effects:  determines if pickupList is a valid
-     *           list of people to pick up
-     */
+
 bool Game::isValidPickupList(const string& pickupList, 
                              const int pickupFloorNum) const {
     int listLength = pickupList.length();
