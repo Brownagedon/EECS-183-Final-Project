@@ -39,24 +39,23 @@ using namespace std;
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     bool isValidSpawn = false;
     string inputString;
+    string junk;
 
     //make sure file is loaded
-    if (!gameFile.is_open()) exit(1);
-    getline(gameFile, inputString);
-    cout << inputString;
-
+    if (gameFile.is_open() == false) exit(1);
 
     // initialize the game
     isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
 
-
+    getline(gameFile, junk);
     while (1) {
         // get next move from file
         getline(gameFile, inputString);
+        cout << inputString << endl;
 
-        //determind if valid spawn by checking fta locations, and making sure values between are numbers
+        // determind if valid spawn by checking fta locations, and making sure values between are numbers
         isValidSpawn = ((inputString.length() == 7 || inputString.length() == 8)
                         && inputString.find('f') == inputString.length() - 5
                         && inputString.find('t') == inputString.length() - 3
@@ -67,7 +66,7 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
                 isValidSpawn = false;
             }
         }
-
+        // if valid spawn then spawn the new person in the building
         if (isValidSpawn) {
             Person newPerson(inputString);
             building.spawnPerson(newPerson);
