@@ -37,7 +37,7 @@ using namespace std;
      *       before checkForGameEnd ends the game
      */
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    bool isValidSpawn = false;
+    bool isValidSpawn = true;
     string inputString;
     string junk;
 
@@ -55,14 +55,22 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
         getline(gameFile, inputString);
 
         // determind if valid spawn by checking fta locations, and making sure values between are numbers
-        isValidSpawn = ((inputString.length() == 8 || inputString.length() == 9)
-                        && inputString.find('f') == inputString.length() - 7
-                        && inputString.find('t') == inputString.length() - 5
-                        && inputString.find('a') == inputString.length() - 3
-                    );
-        for (int i = inputString.find('f') == inputString.length() - 6; i < inputString.length(); i+=2) {
+        if (inputString.length() == 8) {
+            isValidSpawn =  
+                        inputString.find('f') == 1
+                        && inputString.find('t') == 3
+                        && inputString.find('a') == 5;
+        } else if (inputString.length() == 9){ //if length is 9, f, t, and a will be displaced
+            isValidSpawn = 
+                        inputString.find('f') == 2
+                        && inputString.find('t') == 4
+                        && inputString.find('a') == 6;
+        }
+        //made sure the chars after fta are digits
+        for (int i = inputString.find('f') + 1; i < inputString.length(); i+=2) {
             if (inputString.at(i) < '0' || inputString.at(i) > '9') {
                 isValidSpawn = false;
+                cout << "not good!" << endl;
             }
         }
         // if valid spawn then spawn the new person in the building
