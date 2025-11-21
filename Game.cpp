@@ -73,6 +73,11 @@ bool Game::isValidPickupList(const string& pickupList,
                              const int pickupFloorNum) const {
     int listLength = pickupList.length();
     int direction[listLength];
+                            
+    for (int i = 0; i < listLength; i++) {
+        
+    }
+
     if (listLength > ELEVATOR_CAPACITY) {
         return false;
     }    
@@ -92,8 +97,10 @@ bool Game::isValidPickupList(const string& pickupList,
             return false;
         }
         //Each person represented by an index in pickupList must be going in the same direction relative to pickupFloorNum
-        if (direction[i] > 0) {
-
+        for (int j = 0; j < listLength; j++) {
+            if ((direction[i] > 0) != (direction[j] > 0)) {
+                return false;
+            }
         }
 
     }
