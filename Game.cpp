@@ -141,9 +141,17 @@ bool Game::isValidPickupList(const string& pickupList,
     //for loop finds the direction of every index in pickupList where 1 is up and 0 is down
     for (int i = 0; i < listLength; i++) {
         goingUp[i] = 
-            (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[i] - '0').getCurrentFloor() 
-            - building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[i] - '0').getTargetFloor() 
-            > 0);
+            (building
+            .getFloorByFloorNum(pickupFloorNum)
+            .getPersonByIndex(pickupList[i] - '0')
+            .getCurrentFloor() 
+            - 
+            building
+            .getFloorByFloorNum(pickupFloorNum)
+            .getPersonByIndex(pickupList[i] - '0')
+            .getTargetFloor() 
+            > 
+            0);
     }
     
     if (listLength > ELEVATOR_CAPACITY) {
