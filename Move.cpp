@@ -4,8 +4,8 @@
  * Move.cpp
  * Project UID 848fee0125dbb5eb53ed294f20dbef81
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Grey Sato
+ * greysato
  *
  * Final Project - Elevators
  */
@@ -14,6 +14,7 @@
 #include <sstream>
 #include <stdio.h>      
 #include <stdlib.h>
+#include <string>
 #include "Move.h"
 #include "SatisfactionIndex.h"
 #include "Utility.h"
@@ -25,10 +26,10 @@ Move::Move(string commandString) : Move() {
     if (commandString == "") { //check for empty string comes first, to not reference out of bounds 
         isPass = true;
     } else if (commandString.at(0) == 'e' && commandString.at(2) == 'f') {
-        elevatorId = commandString.at(1) - '0';
-        targetFloor = commandString.at(3) - '0';
+        elevatorId = stoi(commandString.substr(1));
+        targetFloor = stoi(commandString.substr(3));
     } else if (commandString.at(0) == 'e' && commandString.at(2) == 'p') {
-        elevatorId = commandString.at(1) - '0';
+        elevatorId = stoi(commandString.substr(1));
         isPickup = true;
     } else if (commandString == "S") {
         isSave = true;
