@@ -53,68 +53,33 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     printGameStartPrompt();
     initGame(gameFile);
 
-    //get rid of endl in buffer and set buffer to 0
+    //get rid of previous endl in buffer
     getline(gameFile, buffer);
-    buffer = "0";
 
-// initial get spawns and moveTick
+    // initial get spawns and moveTick
     // get next move from file
     gameFile >> inputString;
 
     // isolate tick chars
     buffer = inputString;
     buffer.erase(buffer.find('f')); 
-
-    for (int i = buffer.size() - 1; i >= 0; i--) {
-        moveTickChar[i] = buffer.at(i);
-        moveTick += (moveTickChar[i] - '0') * pow(10.0, static_cast<double>((buffer.size() - i - 1)));
-    }
     
     while (tick <= MAX_TURNS) {
+        //add people until their spawn time != the actual time
         while (tick == moveTick && !gameFile.fail()) {
-            // reset back to false
-            isValidSpawn = false;
-
-            // determind if valid spawn by checking fta locations, and making sure values between are numbers
-            if (inputString.length() == 7) {
-                isValidSpawn =  
-                            (inputString.find('f') == 1
-                            && inputString.find('t') == 3
-                            && inputString.find('a') == 5);
-            } else if (inputString.length() == 8){ //if length is 9, f, t, and a will be displaced
-                isValidSpawn = 
-                            (inputString.find('f') == 2
-                            && inputString.find('t') == 4
-                            && inputString.find('a') == 6);
-            }
-
-            // made sure the chars after fta are digits
-            for (int i = inputString.find('f') + 1; i < inputString.length(); i+=2) {
-                if (inputString.at(i) < '0' || inputString.at(i) > '9') {
-                    isValidSpawn = false;
-                }
-            }
-
-            // if valid spawn then spawn the new person in the building
-            if (isValidSpawn) {
-                Person newPerson(inputString);
-                building.spawnPerson(newPerson);
-            } 
-
+            //spawn new person
+            Person newPerson(inputString);
+            building.spawnPerson(newPerson);
+            
             // get next line
             gameFile >> inputString;
-        
+    
             // isolate tick chars
             buffer = inputString;
-            buffer.erase(buffer.find('f')); 
+            buffer.erase(buffer.find('f'));
 
             // determine moveTick of next line
-            moveTick = 0;
-            for (int i = buffer.size() - 1; i >= 0; i--) {
-            moveTickChar[i] = buffer.at(i);
-            moveTick += (moveTickChar[i] - '0') * pow(10.0, static_cast<double>((buffer.size() - i - 1)));
-            }
-  
+            moveTick = stoi(buffer);
         }
 
         // print the state of the Building and check for end of game
