@@ -107,7 +107,7 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
             // isolate tick chars
             buffer = inputString;
             buffer.erase(buffer.find('f')); 
-            
+
             // determine moveTick of next line
             moveTick = 0;
             for (int i = buffer.size() - 1; i >= 0; i--) {
