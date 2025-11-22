@@ -70,8 +70,8 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
         moveTick += (moveTickChar[i] - '0') * pow(10.0, static_cast<double>((buffer.size() - i - 1)));
     }
     
-    while (1) {
-        while (tick == moveTick) {
+    while (tick <= MAX_TURNS) {
+        while (tick == moveTick && !gameFile.fail()) {
             // reset back to false
             isValidSpawn = false;
 
@@ -99,16 +99,15 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
             if (isValidSpawn) {
                 Person newPerson(inputString);
                 building.spawnPerson(newPerson);
-            }
+            } 
 
             // get next line
             gameFile >> inputString;
-
+        
             // isolate tick chars
             buffer = inputString;
             buffer.erase(buffer.find('f')); 
-
-
+            
             // determine moveTick of next line
             moveTick = 0;
             for (int i = buffer.size() - 1; i >= 0; i--) {
