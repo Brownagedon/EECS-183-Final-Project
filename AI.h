@@ -45,4 +45,6 @@ string getAIMoveString(const BuildingState& buildingState);
 string getAIPickupList(const Move& move, const BuildingState& buildingState, 
     const Floor& floorToPickup);
 
+
+int getFloorHigherAnger(Floor floorIn);
 #endif
