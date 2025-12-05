@@ -31,7 +31,7 @@ string getAIMoveString(const BuildingState& buildingState) {
     string move;
 
     // if one or more elevator not moving, pick up on floor with the most total anger
-    int priorityElevator = -1;
+    int priorityElevator = -1; //which elevator should be moved this turn
     int highestAnger = 0;
     bool goodPickup = false;
 
@@ -54,9 +54,10 @@ string getAIMoveString(const BuildingState& buildingState) {
         move += 'p';
         return move;
     }
+    //after checking above conditions, AI will then check next condition
 
-    // if given elevator isn't moving, claim a spot to go to. highest priority wins the move
-    priorityElevator = -1;
+    // if any elevator isn't moving, each non moving elevator claims a spot to go to. highest priority executes the move
+    priorityElevator = -1; //reset priority elevator
     for (int i = 0; i < NUM_ELEVATORS; i++) {
 
     }
@@ -100,7 +101,6 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
         }
         
     }
-
     // take the list with the most anger
     if (totalAngerDown > totalAngerUp) {
         list = downList;
@@ -109,24 +109,4 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
     }
         
     return list;
-}
-
-int getFloorHigherAnger(Floor floorIn) {
-    // get total anger of up and down people and make array of indices for up/down people
-    Person tempPerson;
-    int totalAngerUp = 0;
-    int totalAngerDown = 0;
-
-    for (int i = 0; i < floorIn.getNumPeople(); i++) {
-        tempPerson = floorIn.getPersonByIndex(i);
-        if (tempPerson.getTargetFloor() > tempPerson.getCurrentFloor()) {
-            totalAngerUp += tempPerson.getAngerLevel();
-        } else {
-            totalAngerDown += tempPerson.getAngerLevel();
-        }
-    }
-    if (totalAngerDown > totalAngerUp)
-        return -totalAngerDown;
-    else
-        return totalAngerUp;
 }
