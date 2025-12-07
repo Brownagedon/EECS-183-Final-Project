@@ -31,7 +31,7 @@ string getAIMoveString(const BuildingState& buildingState) {
     string move;
 
     // if one or more elevator not moving, pick up on floor with the most total anger
-    int priorityElevator = -1; //which elevator should be moved this turn
+    int priorityElevator = -1; // which elevator should be moved this turn
     int highestAnger = 0;
     bool goodPickup = false;
 
@@ -41,28 +41,64 @@ string getAIMoveString(const BuildingState& buildingState) {
         for (int j = 0; j < buildingState.floors[elevCurrFloor].numPeople; j++) {
             totalAnger += buildingState.floors[elevCurrFloor].people[j].angerLevel;
         }
-        if (totalAnger >= highestAnger 
+        if (totalAnger >= highestAnger
             && !buildingState.elevators[i].isServicing) {
             highestAnger = totalAnger;
             priorityElevator = i;
-            goodPickup = true;
+            goodPickup = (totalAnger > 0);
         }
     }
+
+    // if we found an idle elevator sitting on an angry floor, do a pickup
     if (goodPickup) {
         move = "e";
-        move += '0' + priorityElevator;
+        move += char('0' + priorityElevator);
         move += 'p';
         return move;
     }
-    //after checking above conditions, AI will then check next condition
+    // after checking above conditions, AI will then check next condition
 
-    // if any elevator isn't moving, each non moving elevator claims a spot to go to. highest priority executes the move
-    priorityElevator = -1; //reset priority elevator
+    // if any elevator isn't moving, send one toward an angry floor
+    priorityElevator = -1; // reset priority elevator
+    int bestScore = -1000000; 
+    int targetFloor = -1;
+
     for (int i = 0; i < NUM_ELEVATORS; i++) {
+        if (buildingState.elevators[i].isServicing) {
+            continue;
+        }
+        int curFloor = buildingState.elevators[i].currentFloor;
 
+        for (int f = 0; f < NUM_FLOORS; f++) {
+            int floorAnger = 0;
+            for (int j = 0; j < buildingState.floors[f].numPeople; j++) {
+                floorAnger += buildingState.floors[f].people[j].angerLevel;
+            }
+            if (floorAnger == 0) {
+                continue;
+            }
+
+            int dist = abs(curFloor - f);
+            int score = floorAnger - dist; // simple heuristic: closer + angrier is better
+
+            if (score > bestScore) {
+                bestScore = score;
+                priorityElevator = i;
+                targetFloor = f;
+            }
+        }
     }
 
-    return move;
+    if (priorityElevator != -1 && targetFloor != -1) {
+        move = "e";
+        move += char('0' + priorityElevator);
+        move += 'f';
+        move += to_string(targetFloor);
+        return move;
+    }
+
+    // no one waiting anywhere, just pass
+    return "";
 }
 
 /*
@@ -74,7 +110,7 @@ string getAIMoveString(const BuildingState& buildingState) {
 *           should be picked up. The string should share the exact format 
 *           as a human player's pickup list input.
 */
-string getAIPickupList(const Move& move, const BuildingState& buildingState, 
+string getAIPickupList(const Move& move, const BuildingState& buildingState,
                        const Floor& floorToPickup) {
     // Pickup list and array to keep track of what person should be picked up
     string list;
@@ -93,19 +129,30 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
     for (int i = 0; i < floorToPickup.getNumPeople(); i++) {
         tempPerson = floorToPickup.getPersonByIndex(i);
         if (tempPerson.getTargetFloor() > tempPerson.getCurrentFloor()) {
-            totalAngerUp += tempPerson.getAngerLevel();
-            upList += i + '0';
-        } else {
-            totalAngerDown += tempPerson.getAngerLevel();
-            downList += i + '0';
+            totalAngerUp += static_cast<int>(angerWeight * tempPerson.getAngerLevel());
+            upList += char('0' + i);
         }
-        
+        else {
+            totalAngerDown += static_cast<int>(angerWeight * tempPerson.getAngerLevel());
+            downList += char('0' + i);
+        }
     }
+
     // take the list with the most anger
     if (totalAngerDown > totalAngerUp) {
         list = downList;
     } else {
         list = upList;
+    }
+
+    // respect elevator capacity
+    if (static_cast<int>(list.size()) > ELEVATOR_CAPACITY) {
+        list = list.substr(0, ELEVATOR_CAPACITY);
+    }
+
+    // fallback: if list somehow empty but there are people, just pick first person
+    if (list.empty() && floorToPickup.getNumPeople() > 0) {
+        list = "0";
     }
         
     return list;
